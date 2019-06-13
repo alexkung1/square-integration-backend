@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>{% block title %}{% endblock %} - Flaskr</title>
+<style>
+  nav ul li {
+    display: inline-block;
+    margin: 0px 20px;
+  }
+</style>
+<nav>
+  <h1>Square Integrator</h1>
+  <ul>
+    <li><a href="{{ url_for('home') }}">Homepage</a></li>
+    <li><a href="{{ url_for('register') }}">Register</a></li>
+    <li><a href="{{ url_for('login') }}">Log In</a></li>
+    <li><a href="{{ url_for('settings') }}">Settings</a></li>
+    <li><a href="{{ url_for('show_tokens') }}">Tokens</a></li>
+    <li><a href="{{ url_for('auth') }}">Authorize</a></li>
+    <li><a href="{{ url_for('api') }}">API's</a></li>
+    <li><a href="{{ url_for('set_token') }}">Set session token</a></li>
+  </ul>
+  <hr />
+</nav>
+{% block content %}{% endblock %}

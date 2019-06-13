@@ -1,0 +1,19 @@
+{% extends 'nav.html' %} {% block content %}
+<section class="content">
+  <script>
+    var authorize = function() {
+      console.log("I AM AUTHORIZING YOU");
+      var p1 = document.getElementById;
+    };
+  </script>
+  {% for perm in permissions %}
+  <input type="checkbox" name="{{ perm }}" value="{{ perm }}" /> {{ perm
+  }}<br />
+  {% endfor %}
+  <a href="{{ url }}">
+    <button type="button" id="authorize" onclick="authorize()">
+      AUTHORIZE
+    </button>
+  </a>
+</section>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'nav.html' %}
+
+{% block content %}
+<section class="content">
+    <h1>AUTHORIZATION SUCCESSFUL</h1>
+    <p>Click <a href={{ url_for('show_tokens') }}>here</a> to see all the tokens!</p>
+    <p>Click <a href={{ url_for('settings') }}>here</a> to add webhooks!</p>
+</section>
+{% endblock %}

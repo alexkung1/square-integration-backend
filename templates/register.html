@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>{% block title %}{% endblock %} - Flaskr</title>
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+<section class="content">
+  <script>
+    var redirect = function() {
+      window.location.replace("{{home}}");
+    };
+    var onSubmit = function() {
+      var username = document.getElementById("username").value;
+      var email = document.getElementById("email").value;
+      fetch("{{url}}").then(redirect);
+    };
+  </script>
+</section>

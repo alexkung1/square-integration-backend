@@ -1,0 +1,39 @@
+{% extends 'nav.html' %} {% block content %}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+<section class="content">
+  <style>
+    .api {
+      margin: 10px 0px;
+    }
+  </style>
+  <script>
+    function accessAPI(url) {
+      url = "{{base_url}}" + "{{apis.2.1}}";
+      return fetch(url, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer {{user_token}}"
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+        .then(res => res.json())
+        .then(r => {
+          console.log("RESPONSE", r);
+          alert(r);
+        })
+        .then(alert("Successfully HIT API!"))
+        .catch(error => console.log("Error:", error));
+    }
+  </script>
+  <h4>Available API's</h4>
+  <ul>
+    {% for api in apis %}
+    <li class="api" onclick="accessAPI()">
+      {{ api }}
+    </li>
+
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

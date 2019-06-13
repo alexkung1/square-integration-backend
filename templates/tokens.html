@@ -1,0 +1,17 @@
+{% extends 'nav.html' %} {% block content %}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+<section class="content">
+  <style>
+    .token {
+      margin: 10px 0px;
+    }
+  </style>
+  <h4>Active tokens</h4>
+  <ul>
+    {% for token in tokens %}
+    <li class="token">{{ token.auth_token }}</li>
+
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

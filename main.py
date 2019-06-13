@@ -10,6 +10,7 @@ import json
 import urllib
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from enum import Enum
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
@@ -17,6 +18,39 @@ db = SQLAlchemy(app)
 
 ### NGROK
 base_url = "https://278417fc.ngrok.io/"
+
+#####################################
+#######   MISC CONSTSANTS  ##########
+#####################################
+
+
+class Permission(Enum):
+    PAYMENTS_READ = "PAYMENTS_READ"
+    PAYMENTS_WRITE = "PAYMENTS_WRITE"
+    INVENTORY_READ = "INVENTORY_READ"
+    INVENTORY_WRITE = "INVENTORY_WRITE"
+    TIMECARDS_READ = "TIMECARDS_READ"
+
+
+AVAILABLE_WEBHOOKS = {
+    "PAYMENT_UPDATED": {
+        "Type": "A charge was made or refunded through Square Point of Sale or the Transaction API.",
+        "Permission": Permission.PAYMENTS_READ.value,
+    },
+    "INVENTORY_UPDATED": {
+        "Type": "The inventory quantity for a catalog item was updated.",
+        "Permission": Permission.INVENTORY_READ.value,
+    },
+    "TIMECARD_UPDATED": {
+        "Type": "A timecard was created in the Square dashboard or an employee clocked in using Square Point of Sale.",
+        "Permission": Permission.TIMECARDS_READ.value,
+    },
+}
+
+
+#####################################
+#####################################
+#####################################
 
 
 #################################
@@ -34,11 +68,51 @@ _SQ_DOMAIN = "connect.squareup.com"
 
 _SQ_AUTHZ_URL = "/oauth2/authorize"
 tokens = {}
-permissions = ["PAYMENTS_READ", "PAYMENTS_WRITE"]
+permissions = [perm.value for perm in Permission]
+
+
+SUPPORTED_APIS = [
+    ("list_employees", "v1/me/employees"),
+    ("list_payments", "v1/{}/payments".format(location_id)),
+    ("list_items", "v1/{}/items".format(location_id)),
+]
 
 #################################
 #################################
 #################################
+
+##################
+### MOCK AUTH ####
+##################
+USER_TOKEN = "EAAAEG_Bhmh-L9VEkxlWHecl1h-tnQ2i8URrm_AP-Au4vEITiv9tiPYd2MLjfnaK"
+
+
+def getUserToken():
+    return USER_TOKEN
+
+
+def setUserToken(token):
+    USER_TOKEN = token
+
+
+@app.route("/set_token")
+def set_token():
+    return render_template(
+        "set_token.html", url=base_url + "set_token2", curr_token=USER_TOKEN
+    )
+
+
+@app.route("/set_token2", methods=["PATCH"])
+def set_token2():
+    token = json.loads(request.data).get("token")
+    USER_TOKEN = token
+    return "OK"
+
+
+##################
+##################
+##################
+
 
 ######################################
 #######   LOGIN MANAGEMENT  ##########
@@ -106,9 +180,13 @@ def getObtainTokenRequest():
 #################################
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def home():
-    # print("-------------------------")
+    return render_template("main.html")
+
+
+@app.route("/auth", methods=["GET", "POST"])
+def auth():
     perms = " ".join(permissions)
     link = (
         "https://"
@@ -121,25 +199,20 @@ def home():
     )
     link2 = urllib.parse.urlparse(link).geturl()
 
-    # return "<a href='{}'>HELLO FRIENDS </a>".format(link)
-    return render_template("main.html", url=link2, permissions=permissions)
+    return render_template("auth.html", url=link2, permissions=permissions)
 
 
 @app.route("/login")
 def login():
     return render_template("login.html", tokens=tokens)
 
-@app.route("/login")
-def login():
-    return render_template("login.html")
-
-@app.route("/authenticate_user", methods=["GET"])
-def authenticate_user():
-    
 
 @app.route("/register")
 def register():
-    return render_template("register.html", url=base_url+"register_backend", home=base_url)
+    return render_template(
+        "register.html", url=base_url + "register_backend", home=base_url
+    )
+
 
 @app.route("/register_backend")
 def register_backend():
@@ -152,8 +225,6 @@ def register_backend():
         return "Registration successful!"
     except:
         return "Registration failed"
-
-
 
 
 @app.route("/request_token", methods=["POST"])
@@ -183,6 +254,12 @@ def location():
     except ApiException as e:
         print("Exception when calling LocationApi->list_locations: %s\n" % e)
     return "Hello, Salvador"
+
+
+@app.route("/settings")
+def settings():
+    # CHECK FOR A TOKEN OR SOMETHING
+    return render_template("settings.html", webhooks=AVAILABLE_WEBHOOKS)
 
 
 @app.route("/callback", methods=["GET", "POST"])
@@ -226,6 +303,32 @@ def callback():
     # The request to the Redirect URL did not include an authorization code. Something went wrong.
     else:
         return "Authorization failed!"
+
+
+@app.route("/api")
+def api():
+    return render_template(
+        "api.html",
+        user_token=getUserToken(),
+        apis=SUPPORTED_APIS,
+        base_url="https://" + _SQ_DOMAIN + "/",
+    )
+
+
+##################
+# MOCK ENDPOINTS #
+##################
+
+
+@app.route("/mock_webhooks", methods=["PUT"])
+def mock_webhooks():
+    # CHECK FOR A TOKEN OR SOMETHING
+    webhooks = json.loads(request.data).get("webhooks")
+    print("RECEIVED THE FOLLOWING WEBHOOK REQUESTS:")
+    for webhook in webhooks:
+        print(webhook)
+
+    return "SUCCESS"
 
 
 if __name__ == "__main__":

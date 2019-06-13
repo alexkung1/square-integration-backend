@@ -1,0 +1,30 @@
+{% extends 'nav.html' %} {% block content %}
+<section class="content">
+  <script>
+    var setToken = function() {
+      input = document.getElementById("token").value;
+      data = {
+        token: input
+      };
+      fetch("{{url}}", {
+        method: "PATCH",
+        body: JSON.stringify(data)
+      }).then(alert("TOKEN SET!"));
+    };
+  </script>
+
+  <h4 style="margin: 5px 0px">
+    Set a new token
+  </h4>
+  <p style="color: grey">
+    Current token: <em>{{ curr_token }}</em>
+  </p>
+  <input
+    type="text"
+    id="token"
+    placeholder="Insert token here."
+    style="width:250px"
+  />
+  <button type="input" onclick="setToken()">SUBMIT</button>
+</section>
+{% endblock %}

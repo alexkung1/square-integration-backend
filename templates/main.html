@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+{% extends 'nav.html' %} {% block content %}
 <section class="content">
-  <script>
-    var authorize = function() {
-      console.log("I AM AUTHORIZING YOU");
-      var p1 = document.getElementById;
-    };
-  </script>
-  {% for perm in permissions %}
-  <input type="checkbox" name="{{ perm }}" value="{{ perm }}" /> {{ perm
-  }}<br />
-  {% endfor %}
-  <a href="{{ url }}">
-    <button type="button" id="authorize" onclick="authorize()">
-      AUTHORIZE
-    </button>
-  </a>
+  <h4>
+    Welcome to square integrator
+  </h4>
 </section>
+{% endblock %}
